@@ -17,8 +17,9 @@
   .container {
     display: flex;
     gap: 50px;
-    max-width: 1000px;
+    max-width: 1100px;
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .acts {
@@ -31,7 +32,7 @@
     background: #1a1a1a;
     padding: 20px;
     border-radius: 8px;
-    min-width: 220px;
+    min-width: 230px;
   }
 
   h2 {
@@ -80,43 +81,57 @@
 
 <div class="container">
   <div class="acts">
-    <div class="act" data-total="9" data-act="1">
-      <h2>ACT I</h2>
-      <label><input type="checkbox" data-id="act1-1"> F.N.G.</label>
-      <label><input type="checkbox" data-id="act1-2"> Crew Expendable</label>
-      <label><input type="checkbox" data-id="act1-3"> The Coup</label>
-      <label><input type="checkbox" data-id="act1-4"> Blackout</label>
-      <label><input type="checkbox" data-id="act1-5"> Charlie Don’t Surf</label>
-      <label><input type="checkbox" data-id="act1-6"> The Bog</label>
-      <label><input type="checkbox" data-id="act1-7"> Hunted</label>
-      <label><input type="checkbox" data-id="act1-8"> Death From Above</label>
-      <label><input type="checkbox" data-id="act1-9"> War Pig</label>
+
+    <div class="act" data-act="prologue">
+      <h2>Prologue</h2>
+      <label><input type="checkbox" data-id="prologue-1"> F.N.G. (Training)</label>
+      <label><input type="checkbox" data-id="prologue-2"> Crew Expendable</label>
+      <label><input type="checkbox" data-id="prologue-3" disabled> The Coup (Can't do anything)</label>
     </div>
 
-    <div class="act" data-total="5" data-act="2">
-      <h2>ACT II</h2>
-      <label><input type="checkbox" data-id="act2-1"> Shock and Awe</label>
-      <label><input type="checkbox" data-id="act2-2"> Safehouse</label>
-      <label><input type="checkbox" data-id="act2-3"> All Ghillied Up</label>
-      <label><input type="checkbox" data-id="act2-4"> One Shot, One Kill</label>
-      <label><input type="checkbox" data-id="act2-5"> Heat</label>
+    <div class="act" data-act="act1">
+      <h2>Act I</h2>
+      <label><input type="checkbox" data-id="act1-1"> Blackout</label>
+      <label><input type="checkbox" data-id="act1-2"> Charlie Don’t Surf</label>
+      <label><input type="checkbox" data-id="act1-3"> The Bog</label>
+      <label><input type="checkbox" data-id="act1-4"> Hunted</label>
+      <label><input type="checkbox" data-id="act1-5"> Death From Above</label>
+      <label><input type="checkbox" data-id="act1-6"> War Pig</label>
+      <label><input type="checkbox" data-id="act1-7"> Shock and Awe</label>
+      <label><input type="checkbox" data-id="act1-8" disabled> Aftermath (Nuclear Ending)</label>
     </div>
 
-    <div class="act" data-total="5" data-act="3">
-      <h2>ACT III</h2>
-      <label><input type="checkbox" data-id="act3-1"> The Sins of the Father</label>
-      <label><input type="checkbox" data-id="act3-2"> Ultimatum</label>
-      <label><input type="checkbox" data-id="act3-3"> All In</label>
-      <label><input type="checkbox" data-id="act3-4"> No Fighting in the War Room</label>
-      <label><input type="checkbox" data-id="act3-5"> Game Over</label>
+    <div class="act" data-act="act2">
+      <h2>Act II</h2>
+      <label><input type="checkbox" data-id="act2-1"> Safehouse</label>
+      <label><input type="checkbox" data-id="act2-2"> All Ghillied Up (Chernobyl)</label>
+      <label><input type="checkbox" data-id="act2-3"> One Shot, One Kill (Chernobyl)</label>
+      <label><input type="checkbox" data-id="act2-4"> Heat</label>
+      <label><input type="checkbox" data-id="act2-5"> The Sins of the Father</label>
     </div>
+
+    <div class="act" data-act="act3">
+      <h2>Act III</h2>
+      <label><input type="checkbox" data-id="act3-1"> Ultimatum</label>
+      <label><input type="checkbox" data-id="act3-2"> All In</label>
+      <label><input type="checkbox" data-id="act3-3"> No Fighting in the War Room</label>
+      <label><input type="checkbox" data-id="act3-4"> Game Over</label>
+    </div>
+
+    <div class="act" data-act="epilogue">
+      <h2>Epilogue</h2>
+      <label><input type="checkbox" data-id="epilogue-1"> Mile High Club (Bonus)</label>
+    </div>
+
   </div>
 
   <div class="stats">
     <h2>Progress</h2>
+    <div class="percent" id="prologue">Prologue: 0%</div>
     <div class="percent" id="act1">Act I: 0%</div>
     <div class="percent" id="act2">Act II: 0%</div>
     <div class="percent" id="act3">Act III: 0%</div>
+    <div class="percent" id="epilogue">Epilogue: 0%</div>
     <hr>
     <div class="percent" id="total"><strong>Total: 0%</strong></div>
   </div>
@@ -127,7 +142,6 @@
 
   function saveProgress() {
     checkboxes.forEach(box => {
-      // localStorage only stores strings, so we store "true"/"false"
       localStorage.setItem(box.dataset.id, box.checked);
     });
   }
@@ -135,44 +149,40 @@
   function loadProgress() {
     checkboxes.forEach(box => {
       const saved = localStorage.getItem(box.dataset.id);
-      if (saved === 'true') {
-        box.checked = true;
-      } else if (saved === 'false') {
-        box.checked = false;
-      }
+      if (saved === 'true') box.checked = true;
+      else if (saved === 'false') box.checked = false;
     });
     updateProgress();
   }
 
   function updateProgress() {
-    const acts = document.querySelectorAll('.act');
+    const sections = document.querySelectorAll('.act');
     let totalChecked = 0;
     let totalMissions = 0;
 
-    acts.forEach((act, index) => {
-      const boxes = act.querySelectorAll('input[type="checkbox"]');
+    sections.forEach(section => {
+      const boxes = section.querySelectorAll('input[type="checkbox"]:not([disabled])');
       const checked = [...boxes].filter(b => b.checked).length;
       const total = boxes.length;
+      const sectionId = section.dataset.act;
+      const percent = Math.round((checked / total) * 100) || 0;
 
-      const percent = Math.round((checked / total) * 100);
-      document.getElementById(`act${index + 1}`).textContent =
-        `Act ${index + 1}: ${percent}%`;
+      document.getElementById(sectionId).textContent =
+        `${section.querySelector('h2').textContent}: ${percent}%`;
 
       totalChecked += checked;
       totalMissions += total;
     });
 
-    const totalPercent = Math.round((totalChecked / totalMissions) * 100);
+    const totalPercent = Math.round((totalChecked / totalMissions) * 100) || 0;
     document.getElementById('total').textContent = `Total: ${totalPercent}%`;
   }
 
-  // Save on change
   checkboxes.forEach(box => box.addEventListener('change', () => {
     updateProgress();
     saveProgress();
   }));
 
-  // Load saved progress on page load
   loadProgress();
 </script>
 
