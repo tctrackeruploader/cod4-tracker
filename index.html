@@ -15,28 +15,25 @@
   }
 
   .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
     gap: 20px;
-    max-width: 1400px;
+    align-items: start;
+    max-width: 1300px;
     width: 100%;
   }
 
-  .acts {
+  .column {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px; /* spacing between top and bottom items in each column */
   }
 
-  .act {
+  .act, .stats {
     background: #1a1a1a;
     padding: 20px;
     border-radius: 8px;
-    min-width: 220px;
-    flex: 1 1 220px;
   }
 
   h2 {
@@ -63,12 +60,8 @@
   }
 
   .stats {
-    background: #1a1a1a;
-    padding: 20px;
-    border-radius: 8px;
-    min-width: 280px;
-    flex: 1 1 280px;
-    height: fit-content;
+    display: flex;
+    flex-direction: column;
   }
 
   .percent {
@@ -108,13 +101,9 @@
     font-size: 1.1em;
   }
 
-  @media (max-width: 1000px) {
+  @media (max-width: 1024px) {
     .container {
-      flex-direction: column;
-      align-items: center;
-    }
-    .acts {
-      justify-content: center;
+      grid-template-columns: 1fr;
     }
   }
 </style>
@@ -122,8 +111,9 @@
 <body>
 
 <div class="container">
-  <div class="acts">
 
+  <!-- Left Column: Prologue (top) and Epilogue (lower) -->
+  <div class="column">
     <div class="act" data-act="prologue">
       <h2>Prologue</h2>
       <label><input type="checkbox" data-id="prologue-1"> F.N.G. (Training)</label>
@@ -131,6 +121,14 @@
       <label><input type="checkbox" data-id="prologue-3" disabled> The Coup (Can't do anything)</label>
     </div>
 
+    <div class="act" data-act="epilogue">
+      <h2>Epilogue</h2>
+      <label><input type="checkbox" data-id="epilogue-1"> Mile High Club (Veteran only)</label>
+    </div>
+  </div>
+
+  <!-- Center Column: Act I (top) and Act II (lower) -->
+  <div class="column">
     <div class="act" data-act="act1">
       <h2>Act I</h2>
       <label><input type="checkbox" data-id="act1-1"> Blackout</label>
@@ -151,18 +149,16 @@
       <label><input type="checkbox" data-id="act2-4"> Heat</label>
       <label><input type="checkbox" data-id="act2-5"> The Sins of the Father</label>
     </div>
+  </div>
 
+  <!-- Right Column: Act III (top) and Progress (lower) -->
+  <div class="column">
     <div class="act" data-act="act3">
       <h2>Act III</h2>
       <label><input type="checkbox" data-id="act3-1"> Ultimatum</label>
       <label><input type="checkbox" data-id="act3-2"> All In</label>
       <label><input type="checkbox" data-id="act3-3"> No Fighting in the War Room</label>
       <label><input type="checkbox" data-id="act3-4"> Game Over</label>
-    </div>
-
-    <div class="act" data-act="epilogue">
-      <h2>Epilogue</h2>
-      <label><input type="checkbox" data-id="epilogue-1"> Mile High Club (Veteran only)</label>
     </div>
 
     <div class="stats">
