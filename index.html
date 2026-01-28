@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>COD4 Progress Tracker</title>
+<title>COD4 Mission Tracker</title>
 <style>
   body {
     font-family: 'Arial', sans-serif;
@@ -11,7 +11,10 @@
     margin: 0;
     padding: 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
   }
 
   .container {
@@ -21,13 +24,14 @@
     align-items: start;
     max-width: 1300px;
     width: 100%;
+    flex-grow: 1;
   }
 
   .column {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 40px; /* spacing between top and bottom items in each column */
+    gap: 40px;
   }
 
   .act, .stats {
@@ -97,13 +101,34 @@
     width: 100%;
   }
 
-  .percent strong {
+  .bottom-note {
+    font-family: 'Arial Black', Gadget, sans-serif;
+    font-weight: bold;
+    color: #ffcc00;
+    line-height: 1.8;
+    position: absolute;
+    left: 25px; /* moved slightly further left */
+    bottom: 130px;
     font-size: 1.1em;
+    text-align: left;
+  }
+
+  .bottom-note .warning {
+    color: #ff4444;
+    display: block;
+    margin-top: 6px;
+    line-height: 1.5;
   }
 
   @media (max-width: 1024px) {
     .container {
       grid-template-columns: 1fr;
+    }
+    .bottom-note {
+      position: static;
+      text-align: center;
+      margin-top: 40px;
+      font-size: 1em;
     }
   }
 </style>
@@ -111,8 +136,7 @@
 <body>
 
 <div class="container">
-
-  <!-- Left Column: Prologue (top) and Epilogue (lower) -->
+  <!-- Left Column -->
   <div class="column">
     <div class="act" data-act="prologue">
       <h2>Prologue</h2>
@@ -127,7 +151,7 @@
     </div>
   </div>
 
-  <!-- Center Column: Act I (top) and Act II (lower) -->
+  <!-- Middle Column -->
   <div class="column">
     <div class="act" data-act="act1">
       <h2>Act I</h2>
@@ -151,7 +175,7 @@
     </div>
   </div>
 
-  <!-- Right Column: Act III (top) and Progress (lower) -->
+  <!-- Right Column -->
   <div class="column">
     <div class="act" data-act="act3">
       <h2>Act III</h2>
@@ -189,15 +213,22 @@
   </div>
 </div>
 
+<!-- Bottom Left Text -->
+<div class="bottom-note">
+  COD4 Mission Tracker<br>
+  made by tctrackeruploader<br>
+  <span class="warning">
+    NO SAVE FILES CAN BE INPUT<br>
+    YOU NEED TO MANUALLY INPUT<br>
+    YOUR COMPLETED MISSIONS HERE.
+  </span>
+</div>
+
 <script>
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
   function saveProgress() {
-    checkboxes.forEach(box => {
-      localStorage.setItem(box.dataset.id, box.checked);
-    });
+    checkboxes.forEach(box => localStorage.setItem(box.dataset.id, box.checked));
   }
-
   function loadProgress() {
     checkboxes.forEach(box => {
       const saved = localStorage.getItem(box.dataset.id);
@@ -206,21 +237,15 @@
     });
     updateProgress();
   }
-
   function updateProgress() {
     const sections = document.querySelectorAll('.act');
-    let totalChecked = 0;
-    let totalMissions = 0;
-    let veteranChecked = 0;
-    let veteranTotal = 0;
-
+    let totalChecked = 0, totalMissions = 0, veteranChecked = 0, veteranTotal = 0;
     sections.forEach(section => {
       const id = section.dataset.act;
       const boxes = section.querySelectorAll('input[type="checkbox"]:not([disabled])');
       const checked = [...boxes].filter(b => b.checked).length;
       const total = boxes.length;
       const percent = Math.round((checked / total) * 100) || 0;
-
       if (id === 'epilogue') {
         veteranChecked += checked;
         veteranTotal += total;
@@ -233,21 +258,17 @@
         totalMissions += total;
       }
     });
-
     const totalPercent = Math.round((totalChecked / totalMissions) * 100) || 0;
     const veteranPercent = Math.round((veteranChecked / veteranTotal) * 100) || 0;
-
     document.getElementById('total').textContent = `Total (Main Campaign): ${totalPercent}%`;
     document.getElementById('bar-total').style.width = `${totalPercent}%`;
     document.getElementById('veteran').textContent = `Veteran Completion (Epilogue): ${veteranPercent}%`;
     document.getElementById('bar-veteran').style.width = `${veteranPercent}%`;
   }
-
   checkboxes.forEach(box => box.addEventListener('change', () => {
     updateProgress();
     saveProgress();
   }));
-
   loadProgress();
 </script>
 
